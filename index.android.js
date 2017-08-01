@@ -3,22 +3,25 @@
  * https://github.com/facebook/react-native
  * @flow
  */
+/**
+ * Sample React Native App
+ * https://github.com/facebook/react-native
+ * @flow
+ */
 
-import React, { Component } from 'react';
+ import React, { Component } from 'react';
 import {
-    Dimensions,
     AppRegistry,
     StyleSheet,
     Text,
     View,
-    navigator,
-    ToastAndroid,
+    Alert,
     TouchableHighlight,
 } from 'react-native';
-import realationandroid from './realationandroid';
+import realationandroid from './relationship';
 
-var defaultexpress="";
-export default class Caculater extends Component {
+var i=0;
+export default class RelationShip extends Component {
 
     constructor(props){
         super(props);
@@ -29,143 +32,110 @@ export default class Caculater extends Component {
     }
 
     _Calculation(){
-        try {
-            let r =eval(defaultexpress);
-            this.setState({result:r})
+        var options = {
+            text:this.state.text,		//输入的文本
+            sex:-1,			//自己的性别：0女性,1男性
+            type:'default',		//转换类型：'default'算称谓,'chain'算关系(此时reverse无效)
+            reverse:false		//称呼方式：true对方称呼我,false我称呼对方
+        };
+        let a=realationandroid(options);
 
-        }catch (exception){
-
-
-        }
-
+       this.setState({result:a+''});
+       let c=this.state.text
+       if (a==''&c.length!=0){
+           this.setState({result:'GAY'});
+       }
     }
     _OperatorNum(a){
 
-        this.setState({text:this.state.text+a});
-        defaultexpress=defaultexpress+a;
+    if (i<16){
+
+        if(i==0){
+            this.setState({text:'我的'+ a});
+            i++;
+        }else {
+
+            this.setState({text:this.state.text+'的'+a});
+            i++;
+        }
+    }else {
+        Alert.alert(
+            '提示',
+            '在玩就彻底把我玩坏了',
+            [
+                /**
+                 *  注意参数名字一定不能错
+                 */
+                {text: '确定', onPress: ()=> console.log('点击确定')}
+            ]);
+    }
+
+
 
     }
     _Operator(a){
-
-
-
-        let c=defaultexpress.split('')
-        let b=c[c.length-1];
-        var n = parseInt(b);
-        if (!isNaN(n))
-        {
-            this.setState({text:this.state.text+a});
-            switch (a){
-                case '÷':defaultexpress=defaultexpress+'/';break;
-                case '%':defaultexpress=defaultexpress+'%';break;
-                case '×':defaultexpress=defaultexpress+'*';break;
-                case '-':defaultexpress=defaultexpress+'-';break;
-                case '+':defaultexpress=defaultexpress+'+';break;
-            }
+        var options = {
+            text:this.state.text,		//输入的文本
+            sex:-1,			//自己的性别：0女性,1男性
+            type:'default',		//转换类型：'default'算称谓,'chain'算关系(此时reverse无效)
+            reverse:true		//称呼方式：true对方称呼我,false我称呼对方
+        };
+        let b=realationandroid(options);
+        this.setState({result:b+''});
 
         }
+   _Shanchu(){
+       if(i>1){
+           this.setState({text:this.state.text.substring(0,this.state.text.length-3)});
+           i--;
+       }else if(i==1) {
+           this.setState({text:''});
+            i=0;
+       }else if (i==0){
+
+       }
+
+   }
 
 
-
-    }
     render() {
 
         return ( <View style={ styles.container}>
-                <View style={styles.jisuan}>
-                    <ExpressionText text={this.state.text}/>
-                    <ResultText result={this.state.result} />
+              <View style={styles.jisuan}>
+                <ExpressionText text={this.state.text}/>
+                <ResultText result={this.state.result} />
+              </View>
+
+
+              <View style={styles.caozuo}>
+                <View style={styles.bt_column}>
+                  <Num_button name='AC' onPress={()=>{this.setState({text:'',result:''}),i=0}}/>
+                  <Num_button name='父' onPress={()=>this._OperatorNum('爸爸')}/>
+                  <Num_button name='母'onPress={()=>this._OperatorNum('妈妈')}/>
+                  <Num_button name='夫'onPress={()=>this._OperatorNum('老公')}/>
+                  <Num_button name='妻'onPress={()=>this._OperatorNum('妻子')}/>
                 </View>
-
-
-                <View style={styles.caozuo}>
-                    <View style={styles.bt_column}>
-                        <Num_button name='AC' onPress={()=>{this.setState({text:'',result:''}),defaultexpress=""}}/>
-                        <Num_button name='7' onPress={()=>this._OperatorNum(7)}/>
-                        <Num_button name='4'onPress={()=>this._OperatorNum(4)}/>
-                        <Num_button name='1'onPress={()=>this._OperatorNum(1)}/>
-                        <Num_button name='%'onPress={()=>this._Operator('%')}/>
-                    </View>
-                    <View style={styles.bt_column}>
-                        <Num_button name='←'onPress={()=>{this.setState({text:this.state.text.substring(0,this.state.text.length-1)}),defaultexpress.substring(0,defaultexpress.length)}}/>
-                        <Num_button name='8' onPress={()=>this._OperatorNum(8)} />
-                        <Num_button name='5'onPress={()=>this._OperatorNum(5)}/>
-                        <Num_button name='2'onPress={()=>this._OperatorNum(2)}/>
-                        <Num_button name='0'onPress={()=>this._OperatorNum(0)}/>
-                    </View>
-
-                    <View style={styles.bt_column}>
-                        <Num_button name='÷'onPress={()=>this._Operator('÷')}/>
-                        <Num_button name='9'onPress={()=>this._OperatorNum(9)}/>
-                        <Num_button name='6'onPress={()=>this._OperatorNum(6)}/>
-                        <Num_button name='3'onPress={()=>this._OperatorNum(3)}/>
-                        <Num_button name='.'onPress={()=>{this.setState({text:this.state.text+"."}),defaultexpress=defaultexpress+"."}}/>
-                    </View>
-                    <View style={styles.bt_column}>
-                        <Num_button name='×'onPress={()=>this._Operator('%')}/>
-                        <Num_button name='-'onPress={()=>this._Operator('-')}/>
-                        <Num_button name='+'onPress={()=>this._Operator('+')}/>
-                        <Result_button name='=' onPress={()=>this._Calculation()}/>
-                    </View>
+                <View style={styles.bt_column}>
+                  <Num_button name='←'onPress={()=>this._Shanchu()}/>
+                  <Num_button name='子' onPress={()=>this._OperatorNum('儿子')} />
+                  <Num_button name='女'onPress={()=>this._OperatorNum('女儿')}/>
+                  <Num_button name='兄'onPress={()=>this._OperatorNum('哥哥')}/>
+                  <Num_button name='弟'onPress={()=>this._OperatorNum('弟弟')}/>
                 </View>
+                <View style={styles.bt_column}>
+                  <Num_button name='⇌'onPress={()=>this._Operator('')}/>
+                  <Num_button name='姐'onPress={()=>this._OperatorNum('姐姐')}/>
+                  <Num_button name='妹'onPress={()=>this._OperatorNum('妹妹')}/>
+                  <Result_button name='=' onPress={()=>this._Calculation()}/>
+                </View>
+              </View>
 
             </View>
         );
     }
 }
-class MytitleButton extends Component{
-    // 构造
-    constructor(props) {
-        super(props);
-        // 初始状态
-        this.state = {};
-    }
-    _onPress(){
 
-        const {navigator }=this.props;
-
-        if (navigator){
-            navigator.push({
-
-                name:"realationandroid" ,
-                Component:"realationandroid",
-
-
-
-            })
-        }
-    }
-
-
-    render(){
-        return(
-            <View style={{flex:0.4}}>
-                <TouchableHighlight
-                    underlayColor="grey"
-                    style={{
-                        margin:10,
-                        height:20,width:20,
-                        alignItems:'center',
-                        justifyContent: 'center',
-                        borderWidth
-                            :0.2,borderColor:'#D6D6D6'
-                    }}
-                    onPress = {()=>{
-                        this._onPress();
-                    }}>
-                    <Text style={{textAlign:'center', justifyContent: 'center',fontSize:28}} >{this.props.name}</Text>
-                </TouchableHighlight>
-
-                < /View>
-
-
-                )
-
-
-                };
-
-                }
-
-                class ExpressionText extends Component{
+              class ExpressionText extends Component{
                 // 构造
                 constructor(props) {
                 super(props);
@@ -175,7 +145,7 @@ class MytitleButton extends Component{
 
                 render(){
                 return(
-                <Text style={ {margin:30,flex:1,textAlign:'right', justifyContent: 'center',fontSize:30} } >
+                <Text   numberOfLines={3} style={ {margin:10,flex:1,textAlignVertical :'center', textAlign:'right', justifyContent: 'center',fontSize:20} } >
                 {this.props.text}
                 </Text>
                 )
@@ -185,7 +155,7 @@ class MytitleButton extends Component{
 
             }
 
-                class ResultText extends Component {
+              class ResultText extends Component {
                 // 构造
                 constructor(props) {
                 super(props);
@@ -196,7 +166,8 @@ class MytitleButton extends Component{
                 render(){
                 return(
 
-                <Text style={ {flex:1,textAlign:'right',margin:30,
+                <Text style={ {
+                     flex:0.7,textAlign:'right',margin:30,
                     justifyContent: 'center',fontSize:30} } >
                 {this.props.result}
                 </Text>
@@ -207,7 +178,7 @@ class MytitleButton extends Component{
 
             }
 
-                class Num_button extends Component{
+              class Num_button extends Component{
 
                 render(){
                 return(
@@ -231,22 +202,23 @@ class MytitleButton extends Component{
 
             }
 
-                class Result_button extends Component{
+              class Result_button extends Component{
                 render(){
                 return(
                 <TouchableHighlight
 
                 underlayColor="grey"
                 style={{
+                  backgroundColor:'orange',
                     alignItems:'center',
                     justifyContent: 'center',
                     flex: 2, borderWidth
-                        :0.3,borderColor:'#D6D6D6'
+                        :0.3,borderColor:'orange'
                 }}
                 onPress = {()=>{
                     this.props.onPress && this.props.onPress();
                 }}>
-                <Text style={{textAlign:'center', justifyContent: 'center',fontSize:28   }} >{this.props.name}</Text>
+                <Text style={{textAlign:'center', justifyContent: 'center',fontSize:28 ,color:'white'  }} >{this.props.name}</Text>
                 </TouchableHighlight>
 
                 );
@@ -254,7 +226,7 @@ class MytitleButton extends Component{
 
 
             }
-                const styles = StyleSheet.create({
+              const styles = StyleSheet.create({
                 container: {
                 flex:1, flexDirection:'column', backgroundColor:"darkgray",marginTop:20
 
@@ -272,26 +244,10 @@ class MytitleButton extends Component{
             },
                 bt_column:{
                 flex :1,
-
                 flexDirection:'column',
             },
 
-                number_bt:{
-                flex:1,
 
 
-            },
-
-                welcome: {
-                fontSize: 20,
-                textAlign: 'center',
-                margin: 10,
-            },
-                instructions: {
-                textAlign: 'center',
-                color: '#333333',
-                marginBottom: 5,
-            },
             });
-
-                AppRegistry.registerComponent('Caculater', () => Caculater);
+AppRegistry.registerComponent('RelationShip', () => RelationShip);
